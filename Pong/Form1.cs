@@ -14,7 +14,9 @@ namespace Pong
     {
         Ball ball;
         Paddle paddle;
+        Phys phys = new Phys();
 
+        bool gameOver = false;
         bool pause = false;
         int gameSpeed = 33;
 
@@ -26,9 +28,9 @@ namespace Pong
             Cursor.Hide();
 
             var gitRekt = ClientRectangle;
-            paddle = new Paddle(gitRekt.Width / 2, gitRekt.Height - 80);
-            ball = new Ball(gitRekt.Width/2, gitRekt.Height/2);
-            ball.setSpeed(10, 15);
+            paddle = new Paddle(gitRekt.Width / 2, gitRekt.Height - 30);
+            ball = new Ball(gitRekt.Width/2, 59);
+            ball.setSpeed(0, 15);
 
             var context = BufferedGraphicsManager.Current;
             grafx =  context.Allocate(CreateGraphics(), new Rectangle(0, 0, Width, Height));
@@ -42,10 +44,11 @@ namespace Pong
 
         void update()
         {
-            if (pause)
+            if (pause || gameOver)
                 return;
-            ball.move();
+            phys.moveBall(ball);
             detectCollision();
+            paddle.update();
         }
 
         void detectCollision()
@@ -54,19 +57,31 @@ namespace Pong
             var b = ball.getBounds();
             var pb = paddle.getBounds();
 
-            if (b.Right >= client.Width || b.Left <= 0)
-            {
-                ball.bounceX();
-            }
+            if (b.Right >= client.Width && ball.speed.X > 0)
+                ball.speed.X = -ball.speed.X;
+            else if (b.Left <= 0 && ball.speed.X < 0)
+                ball.speed.X = Math.Abs(ball.speed.X);
+
             if (b.Bottom >= client.Height || b.Top <= 0)
             {
-                ball.bounceY();
+                ball.speed.Y *= -1;
             }
 
-            if (b.IntersectsWith(pb))
+            if (b.Left >= pb.Left && b.Right <= pb.Right &&
+                b.Bottom >= pb.Top && ball.speed.Y > 0)
             {
-                //ball.bounceX();
-                ball.bounceY();
+                ball.pos.Y = pb.Top-10;
+
+                var ps = paddle.getSpeed();
+                var xs = ball.speed.X;
+
+                ball.speed.X = (int) ((float) xs * 0.5f + ps.X);
+                ball.speed.Y = (int) -((float) ball.speed.Y * 1.5f);
+                var ys = ball.speed.Y;
+                ball.speed.Y = (ys/Math.Abs(ys)) * Math.Min(Math.Abs(ys), 30);
+            }
+            else if(b.Bottom >= client.Bottom) {
+                gameOver = true;
             }
         }
 
@@ -79,6 +94,13 @@ namespace Pong
             paddle.draw(g);
             drawDebugInfo(g);
             
+            if (gameOver)
+            {
+                drawString(g, "game over",
+                    100,
+                    ClientRectangle.Height/2);
+            }
+
             grafx.Render(Graphics.FromHwnd(Handle));
         }
 
@@ -86,15 +108,15 @@ namespace Pong
         {
             var rekt = ball.getBounds();
             drawString(g,
-                String.Format("ball pos: X={0}, Y={1}", ball.pos.X, ball.pos.Y),
+                String.Format("ball: pos={0} speed={1}", 
+                    ball.pos,
+                    ball.speed),
                 20, 5);
             drawString(g,
-                String.Format("ball bounds: T={0}, L={1}, R={2}, B={3}",
-                rekt.Top, rekt.Left, rekt.Right, rekt.Bottom),
+                String.Format("paddle: pos={0} speed={1}", 
+                    paddle.pos,
+                    paddle.getSpeed()),
                 20, 20);
-            drawString(g,
-                String.Format("Frame dimension: W={0}, H={1}", Width, Height),
-                20, 35);
         }
 
         void drawString(Graphics g, string s, int x, int y)
@@ -112,10 +134,13 @@ namespace Pong
 
         private void Form1_MouseMove(object sender, MouseEventArgs e)
         {
-            paddle.pos.X = e.X;
+            var x = e.X;
             var r = paddle.getBounds();
+            r.X = x;
             if (r.Right > ClientRectangle.Right)
-                paddle.pos.X = ClientRectangle.Right - r.Width;
+                x = ClientRectangle.Right - r.Width;
+
+            paddle.setPos(new Point(x, r.Y));
         }
 
         private void Form1_Paint(object sender, PaintEventArgs e)

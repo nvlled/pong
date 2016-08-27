@@ -10,7 +10,11 @@ namespace Pong
     class Paddle
     {
         public Point pos;
-        public Size size = new Size(70, 20);
+        public Point? lastPos;
+        public Size size = new Size(80, 10);
+
+        public int speedCounterMax = 10;
+        public int speedCounter = 0;
 
         public Paddle(int x, int y)
         {
@@ -20,6 +24,29 @@ namespace Pong
         public Rectangle getBounds()
         {
             return new Rectangle(pos, size);
+        }
+
+        public Point getSpeed()
+        {
+            if (lastPos == null)
+                return new Point(0, 0);
+            return pos - (Size)lastPos;
+        }
+
+        public void setPos(Point p)
+        {
+            lastPos = pos;
+            pos = p;
+            speedCounter = speedCounterMax;
+        }
+
+        public void update()
+        {
+            if (speedCounter == 0)
+            {
+                lastPos = null;
+            }
+            speedCounter--;
         }
 
         public void draw(Graphics g)

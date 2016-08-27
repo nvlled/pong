@@ -16,7 +16,7 @@ namespace Pong
         public int size { get; set; }
         public Ball(int x, int y)
         {
-            size = 25;
+            size = 15;
             pos = new Point(x, y);
             speed = new Point(0, 0);
         }
@@ -30,22 +30,6 @@ namespace Pong
         public Rectangle getBounds()
         {
             return new Rectangle(pos, new Size(size, size));
-        }
-
-        public void move()
-        {
-            pos.X += speed.X;
-            pos.Y += speed.Y;
-        }
-
-        public void bounceX()
-        {
-            speed.X *= -1;
-        }
-
-        public void bounceY()
-        {
-            speed.Y *= -1;
         }
 
         public void draw(Graphics g)
