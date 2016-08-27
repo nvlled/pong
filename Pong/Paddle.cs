@@ -13,7 +13,7 @@ namespace Pong
         public Point? lastPos;
         public Size size = new Size(80, 10);
 
-        public int speedCounterMax = 10;
+        public int speedCounterMax = 5;
         public int speedCounter = 0;
 
         public Paddle(int x, int y)
@@ -35,7 +35,10 @@ namespace Pong
 
         public void setPos(Point p)
         {
-            lastPos = pos;
+            if (lastPos != null && Math.Abs(lastPos.Value.X) < Math.Abs(p.X))
+                lastPos = pos;
+            else
+                lastPos = pos;
             pos = p;
             speedCounter = speedCounterMax;
         }
@@ -51,7 +54,7 @@ namespace Pong
 
         public void draw(Graphics g)
         {
-            g.FillRectangle(Brushes.SaddleBrown, new Rectangle(pos, size));
+            g.FillRectangle(Brushes.SteelBlue, new Rectangle(pos, size));
         }
     }
 }

@@ -16,8 +16,14 @@ namespace Pong
         Paddle paddle;
         Phys phys = new Phys();
 
+        int levelNo = 0;
+        Level currentLevel;
+
+        bool allowBottom = true;
+        bool showDebugInfo = false;
         bool gameOver = false;
         bool pause = false;
+        bool gameFinished = false;
         int gameSpeed = 33;
 
         BufferedGraphics grafx;
@@ -27,20 +33,21 @@ namespace Pong
             InitializeComponent();
             Cursor.Hide();
 
+            currentLevel = new Level(LevelDefs.levels[levelNo]);
+
             var gitRekt = ClientRectangle;
             paddle = new Paddle(gitRekt.Width / 2, gitRekt.Height - 30);
-            ball = new Ball(gitRekt.Width/2, 59);
-            ball.setSpeed(0, 15);
+            ball = new Ball(paddle.pos.X + paddle.size.Width/2, paddle.pos.Y-15);
+            ball.setSpeed(0, -15);
 
             var context = BufferedGraphicsManager.Current;
-            grafx =  context.Allocate(CreateGraphics(), new Rectangle(0, 0, Width, Height));
+            grafx = context.Allocate(CreateGraphics(), new Rectangle(0, 0, Width, Height));
 
             Timer t = new Timer();
             t.Tick += t_Tick;
             t.Interval = gameSpeed;
             t.Start();
         }
-
 
         void update()
         {
@@ -67,21 +74,38 @@ namespace Pong
                 ball.speed.Y *= -1;
             }
 
-            if (b.Left >= pb.Left && b.Right <= pb.Right &&
+            Target target = currentLevel.getTarget(b);
+            if (target != null)
+            {
+                currentLevel.destroy(target);
+                ball.speed.Y *= -1;
+                if (currentLevel.isCompleted())
+                {
+                    currentLevel = new Level(LevelDefs.levels[++levelNo]);
+                    if (levelNo >= LevelDefs.levels.Count())
+                        gameFinished = true;
+                }
+            }
+            else if (b.Left >= pb.Left && b.Right <= pb.Right &&
                 b.Bottom >= pb.Top && ball.speed.Y > 0)
             {
-                ball.pos.Y = pb.Top-10;
+                ball.pos.Y = pb.Top - 10;
 
                 var ps = paddle.getSpeed();
                 var xs = ball.speed.X;
 
-                ball.speed.X = (int) ((float) xs * 0.5f + ps.X);
-                ball.speed.Y = (int) -((float) ball.speed.Y * 1.5f);
+                ball.speed.X = (int)((float)xs * 0.5f + ps.X);
+                ball.speed.Y = (int)-((float)ball.speed.Y * 1.5f);
                 var ys = ball.speed.Y;
-                ball.speed.Y = (ys/Math.Abs(ys)) * Math.Min(Math.Abs(ys), 30);
+                ball.speed.Y = (ys / Math.Abs(ys)) * Math.Min(Math.Abs(ys), 30);
             }
-            else if(b.Bottom >= client.Bottom) {
+            else if (!allowBottom && b.Bottom >= client.Bottom)
+            {
                 gameOver = true;
+            }
+            else if (b.Bottom >= client.Bottom && ball.speed.Y > 0)
+            {
+                ball.speed.Y *= -1;
             }
         }
 
@@ -89,16 +113,23 @@ namespace Pong
         {
             var g = grafx.Graphics;
 
-            g.Clear(Color.White);
+            g.Clear(Color.DarkGray);
+            currentLevel.draw(g);
             ball.draw(g);
             paddle.draw(g);
             drawDebugInfo(g);
-            
-            if (gameOver)
+
+            if (gameFinished)
+            {
+                drawString(g, "well done",
+                    100,
+                    ClientRectangle.Height / 2);
+            }
+            else if (gameOver)
             {
                 drawString(g, "game over",
                     100,
-                    ClientRectangle.Height/2);
+                    ClientRectangle.Height / 2);
             }
 
             grafx.Render(Graphics.FromHwnd(Handle));
@@ -106,14 +137,16 @@ namespace Pong
 
         void drawDebugInfo(Graphics g)
         {
+            if (!showDebugInfo)
+                return;
             var rekt = ball.getBounds();
             drawString(g,
-                String.Format("ball: pos={0} speed={1}", 
+                String.Format("ball: pos={0} speed={1}",
                     ball.pos,
                     ball.speed),
                 20, 5);
             drawString(g,
-                String.Format("paddle: pos={0} speed={1}", 
+                String.Format("paddle: pos={0} speed={1}",
                     paddle.pos,
                     paddle.getSpeed()),
                 20, 20);
@@ -122,8 +155,8 @@ namespace Pong
         void drawString(Graphics g, string s, int x, int y)
         {
             g.DrawString(s,
-                new Font(FontFamily.GenericMonospace, 12.5f), 
-                Brushes.Black, new PointF((float) x, (float) y));
+                new Font(FontFamily.GenericMonospace, 12.5f),
+                Brushes.Black, new PointF((float)x, (float)y));
         }
 
         void t_Tick(object sender, EventArgs e)

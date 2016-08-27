@@ -36,7 +36,7 @@ namespace Pong
         {
             var b = getBounds();
             //g.DrawRectangle(new Pen(Brushes.Salmon), b);
-            g.FillEllipse(Brushes.OrangeRed, b);
+            g.FillEllipse(Brushes.GhostWhite, b);
         }
     }
 }
