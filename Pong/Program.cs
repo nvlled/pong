@@ -14,7 +14,7 @@ namespace Pong
         [STAThread]
         static void Main()
         {
-            var form = new Form1();
+            var form = new Pong();
             var gs = new GameState(form.ClientRectangle);
             form.gs = gs;
 
