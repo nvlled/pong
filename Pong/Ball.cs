@@ -12,6 +12,7 @@ namespace Pong
     {
         public Point pos;
         public Point speed;
+        public Brush brush = Brushes.GhostWhite;
 
         public int size { get; set; }
         public Ball(int x, int y)
@@ -35,8 +36,7 @@ namespace Pong
         public void draw(Graphics g)
         {
             var b = getBounds();
-            //g.DrawRectangle(new Pen(Brushes.Salmon), b);
-            g.FillEllipse(Brushes.GhostWhite, b);
+            g.FillEllipse(brush, b);
         }
     }
 }

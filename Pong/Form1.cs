@@ -62,7 +62,20 @@ namespace Pong
 
         private void Form1_KeyPress(object sender, KeyPressEventArgs e)
         {
-            gs.pause = !gs.pause;
+            if (gs.gameOver)
+            {
+                gs.gameOver = false;
+                gs.levelNo = 0;
+                gs.playerLife = 3;
+                var play = new PlayInterface(gs);
+                gs.currentInterface = play;
+                gs.currentLevel = new Level(gs, LevelDefs.levels[gs.levelNo]);
+                play.readyBall();
+            }
+            else
+            {
+                gs.pause = !gs.pause;
+            }
         }
 
         private void Form1_Resize(object sender, EventArgs e)

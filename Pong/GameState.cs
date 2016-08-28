@@ -24,7 +24,7 @@ namespace Pong
         public int levelNo = 0;
         public Level currentLevel;
 
-        public bool allowBottom = true;
+        public bool allowBottom = false;
         public bool showDebugInfo = false;
         public bool gameOver = false;
         public bool pause = false;
@@ -32,6 +32,7 @@ namespace Pong
         public int gameSpeed = 33;
 
         public int ballMaxSpeed = 25;
+        public int playerLife = 3;
 
         public Rectangle winRect;
     }

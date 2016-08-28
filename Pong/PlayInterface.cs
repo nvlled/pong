@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Pong
 {
@@ -18,9 +19,29 @@ namespace Pong
 
         public void readyBall()
         {
-            gs.ball.pos.X = gs.paddle.pos.X + gs.paddle.size.Width / 2;
-            gs.ball.pos.Y = gs.paddle.pos.Y - 15;
-            gs.ball.setSpeed(0, -15);
+            gs.ball.pos = new Point(-10, -10);
+            gs.currentInterface = new FnInterface()
+            {
+                DrawAction = delegate(Graphics g)
+                {
+                    draw(g);
+                    drawString(g, "Get Ready!",
+                        gs.winRect.Width / 2 - 50,
+                        gs.winRect.Height / 2);
+                }
+            };
+            Timer t = new Timer();
+            t.Tick += (s, e) =>
+            {
+                gs.ball.pos.X = gs.paddle.pos.X + gs.paddle.size.Width / 2;
+                gs.ball.pos.Y = gs.paddle.pos.Y - 15;
+                gs.ball.setSpeed(0, -15);
+                t.Stop();
+                gs.currentInterface = this;
+            };
+            t.Interval = 2000;
+            t.Start();
+            
         }
 
         public void update()
@@ -79,7 +100,13 @@ namespace Pong
             }
             else if (!gs.allowBottom && b.Bottom >= winRect.Bottom)
             {
-                gs.gameOver = true;
+                gs.playerLife--;
+                if (gs.playerLife <= 0)
+                    gs.gameOver = true;
+                else
+                {
+                    readyBall();
+                }
             }
             else if (b.Bottom >= winRect.Bottom && ball.speed.Y > 0)
             {
@@ -122,6 +149,18 @@ namespace Pong
             }
         }
 
+        public void drawPlayerStatus(Graphics g)
+        {
+            var r = gs.ball.getBounds();
+            r.X = 10;
+            r.Y = 10;
+            for (int i = 0; i < gs.playerLife; i++)
+            {
+                g.FillEllipse(gs.ball.brush, r);
+                r.X += r.Width + 5;
+            }
+        }
+
         public void draw(Graphics g)
         {
             var ball = gs.ball;
@@ -132,6 +171,7 @@ namespace Pong
             ball.draw(g);
             paddle.draw(g);
             drawDebugInfo(g);
+            drawPlayerStatus(g);
 
             if (gs.gameFinished)
             {
@@ -142,8 +182,14 @@ namespace Pong
             else if (gs.gameOver)
             {
                 drawString(g, "game over",
-                    100,
+                    gs.winRect.Width/2 - 60,
                     gs.winRect.Height / 2);
+            }
+            else if (gs.pause)
+            {
+                drawString(g, "<paused>",
+                    gs.winRect.Width/2 - 60,
+                    gs.winRect.Height / 2 + 50);
             }
         }
 
@@ -169,8 +215,8 @@ namespace Pong
         void drawString(Graphics g, string s, int x, int y)
         {
             g.DrawString(s,
-                new Font(FontFamily.GenericMonospace, 12.5f),
-                Brushes.Black, new PointF((float)x, (float)y));
+                new Font(FontFamily.GenericSansSerif, 13.5f),
+                Brushes.White, new PointF((float)x, (float)y));
         }
 
     }
