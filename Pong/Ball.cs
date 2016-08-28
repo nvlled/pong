@@ -16,7 +16,7 @@ namespace Pong
         public int size { get; set; }
         public Ball(int x, int y)
         {
-            size = 15;
+            size = 12;
             pos = new Point(x, y);
             speed = new Point(0, 0);
         }

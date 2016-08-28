@@ -11,7 +11,7 @@ namespace Pong
     {
         public static Size size = new Size(25, 10);
         public Point pos = new Point(0, 0);
-        public Brush brush = Brushes.Aquamarine;
+        public int life = 2;
 
         public Target(int x, int y)
         {
@@ -20,6 +20,13 @@ namespace Pong
 
         public void draw(Graphics g)
         {
+            var brush = Brushes.MediumBlue;
+            switch (life)
+            {
+                case 3: brush = Brushes.MediumAquamarine; break;
+                case 2: brush = Brushes.Aquamarine; break;
+                case 1: brush = Brushes.Bisque; break;
+            }
             g.FillRectangle(brush, getRekt());
         }
 

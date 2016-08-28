@@ -53,11 +53,15 @@ namespace Pong
             Target target = gs.currentLevel.getTarget(b);
             if (target != null)
             {
-                gs.currentLevel.destroy(target);
                 ball.speed.Y *= -1;
-                if (gs.currentLevel.isCompleted())
+                target.life--;
+                if (target.life <= 0)
                 {
-                    nextLevel();
+                    gs.currentLevel.destroy(target);
+                    if (gs.currentLevel.isCompleted())
+                    {
+                        nextLevel();
+                    }
                 }
             }
             else if (b.Left >= pb.Left && b.Right <= pb.Right &&
