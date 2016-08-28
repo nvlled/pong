@@ -7,9 +7,9 @@ using System.Drawing;
 
 namespace Pong
 {
-    class Target
+    public class Target
     {
-        public static Size size = new Size(30, 15);
+        public static Size size = new Size(25, 10);
         public Point pos = new Point(0, 0);
         public Brush brush = Brushes.Aquamarine;
 

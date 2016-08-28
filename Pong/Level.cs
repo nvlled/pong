@@ -7,16 +7,20 @@ using System.Drawing;
 
 namespace Pong
 {
-    class Level
+    public class Level
     {
+        GameState gs;
         Point pos = new Point(20, 20);
         Point margin = new Point(5, 5);
+        string layout;
 
         List<Target> targets;
-        public Level(string layout)
+        public Level(GameState gs, string layout)
         {
+            this.gs = gs;
             targets = new List<Target>();
-            parseLayout(layout);
+            this.layout = layout;
+            parseLayout();
         }
 
         public Target getTarget(Rectangle r)
@@ -47,13 +51,23 @@ namespace Pong
             return targets.Count() == 0;
         }
 
-        private void parseLayout(string layout)
+        public void parseLayout()
         {
-            int y = 20;
+            int h = layout.Split('\n').Count() * (Target.size.Height + margin.Y);
+            int w = layout.Split('\n')
+                    .Select(line => line.Trim().Count())
+                    .Aggregate((a, b) => a > b ? a : b) 
+                     * (Target.size.Width + margin.X);
+
+            // TODO: get wxh of layout
+            // center layout according to client size
+
+            int y = (gs.winRect.Height - h) / 4;
+            int x;
             foreach (var line in layout.Split('\n'))
             {
                 var elems = line.Trim().Skip(1);
-                int x = 20;
+                x = (gs.winRect.Width - w) / 2;
                 foreach (var c in elems)
                 {
                     if (c != ' ')

@@ -71,7 +71,7 @@ namespace Pong
                 ball.speed.X = (int)((float)xs * 0.5f + ps.X);
                 ball.speed.Y = (int)-((float)ball.speed.Y * 1.5f);
                 var ys = ball.speed.Y;
-                ball.speed.Y = (ys / Math.Abs(ys)) * Math.Min(Math.Abs(ys), 30);
+                ball.speed = limitSpeed(ball.speed, gs.ballMaxSpeed);
             }
             else if (!gs.allowBottom && b.Bottom >= winRect.Bottom)
             {
@@ -81,6 +81,15 @@ namespace Pong
             {
                 ball.speed.Y *= -1;
             }
+        }
+
+        Point limitSpeed(Point p, int n)
+        {
+            if (p.Y != 0)
+                p.Y = (p.Y / Math.Abs(p.Y)) * Math.Min(Math.Abs(p.Y), n);
+            if (p.X != 0)
+                p.X = (p.X / Math.Abs(p.X)) * Math.Min(Math.Abs(p.X), n);
+            return p;
         }
 
         void nextLevel()
@@ -103,7 +112,7 @@ namespace Pong
                 var fade = new FadeInterface(gs, intf);
                 fade.OnDecrease = () =>
                 {
-                    gs.currentLevel = new Level(LevelDefs.levels[++gs.levelNo]);
+                    gs.currentLevel = new Level(gs, LevelDefs.levels[++gs.levelNo]);
                 };
                 gs.currentInterface = fade;
             }

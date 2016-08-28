@@ -12,36 +12,23 @@ namespace Pong
 {
     public partial class Form1 : Form
     {
-        GameState gs;
         BufferedGraphics grafx;
+        public GameState gs;
 
         public Form1()
         {
             InitializeComponent();
             Cursor.Hide();
-
-            gs = new GameState(ClientRectangle);
-
-            var play = new PlayInterface(gs);
-            gs.currentInterface = play;
-            gs.currentLevel = new Level(LevelDefs.levels[gs.levelNo]);
-
-            var gitRekt = ClientRectangle;
+            //this.TopMost = true;
+            this.FormBorderStyle = FormBorderStyle.None;
+            //this.WindowState = FormWindowState.Maximized;
 
             var context = BufferedGraphicsManager.Current;
             grafx = context.Allocate(CreateGraphics(), new Rectangle(0, 0, Width, Height));
-
-            play.readyBall();
-
-            Timer t = new Timer();
-            t.Tick += t_Tick;
-            t.Interval = gs.gameSpeed;
-            t.Start();
         }
 
-
-
         void update() {
+            gs.winRect = ClientRectangle;
             gs.currentInterface.update();
         }
 
@@ -51,7 +38,7 @@ namespace Pong
             grafx.Render(Graphics.FromHwnd(Handle));
         }
 
-        void t_Tick(object sender, EventArgs e)
+        public void t_Tick(object sender, EventArgs e)
         {
             update();
             draw();
@@ -76,6 +63,15 @@ namespace Pong
         private void Form1_KeyPress(object sender, KeyPressEventArgs e)
         {
             gs.pause = !gs.pause;
+        }
+
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+        }
+
+        private void Form1_MouseEnter(object sender, EventArgs e)
+        {
+            Cursor.Clip = Bounds;
         }
     }
 }

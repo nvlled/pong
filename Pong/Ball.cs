@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace Pong
 {
-    class Ball
+    public class Ball
     {
         public Point pos;
         public Point speed;

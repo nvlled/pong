@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Pong
 {
-    class Phys
+    public class Phys
     {
         public float gravity = 1.0f;
 

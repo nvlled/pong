@@ -14,9 +14,26 @@ namespace Pong
         [STAThread]
         static void Main()
         {
+            var form = new Form1();
+            var gs = new GameState(form.ClientRectangle);
+            form.gs = gs;
+
+            var play = new PlayInterface(gs);
+            gs.currentInterface = play;
+            gs.currentLevel = new Level(gs, LevelDefs.levels[gs.levelNo]);
+
+            var gitRekt = form.ClientRectangle;
+
+            play.readyBall();
+
+            Timer t = new Timer();
+            t.Tick += form.t_Tick;
+            t.Interval = gs.gameSpeed;
+            t.Start();
+
             Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            //Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(form);
         }
     }
 }

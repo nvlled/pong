@@ -7,7 +7,7 @@ using System.Drawing;
 
 namespace Pong
 {
-    class Paddle
+    public class Paddle
     {
         public Point pos;
         public Point? lastPos;

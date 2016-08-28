@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Pong
 {
-    class GameState
+    public class GameState
     {
         public GameState(Rectangle r) {
             winRect = r;
@@ -30,6 +30,8 @@ namespace Pong
         public bool pause = false;
         public bool gameFinished = false;
         public int gameSpeed = 33;
+
+        public int ballMaxSpeed = 25;
 
         public Rectangle winRect;
     }
