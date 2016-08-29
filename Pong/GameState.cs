@@ -32,7 +32,8 @@ namespace Pong
         public int gameSpeed = 33;
 
         public int ballMaxSpeed = 25;
-        public int playerLife = 3;
+        public static int startPlayerLife = 1;
+        public int playerLife = startPlayerLife;
 
         public Rectangle winRect;
     }

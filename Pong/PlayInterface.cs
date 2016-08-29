@@ -184,6 +184,9 @@ namespace Pong
                 drawString(g, "game over",
                     gs.winRect.Width/2 - 60,
                     gs.winRect.Height / 2);
+                drawString(g, "<click or press any key to play again>",
+                    gs.winRect.Width/2 - 200,
+                    gs.winRect.Height / 2 + 50);
             }
             else if (gs.pause)
             {

@@ -12,5 +12,6 @@ namespace Pong
         void update();
         void draw(Graphics g);
 
+        // TODO: add key and mouse handlers
     }
 }
