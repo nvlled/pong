@@ -2,7 +2,7 @@
 # pong
 A game written in winforms
 
-![demo](pong.gif)
+![demo](Pong/pong.gif)
 
 ## Building and running
 For linux:
